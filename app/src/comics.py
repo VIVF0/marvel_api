@@ -2,27 +2,27 @@ import requests
 import hashlib
 import time
 import os
-from dotenv import load_dotenv
 import concurrent.futures
 from PIL import Image
 import urllib.request
 import os
 import time
 import random
+from dotenv import load_dotenv
 
 load_dotenv()
 
-class Characters:
+class Comics:
     def __init__(self):
         self.__public_key = os.getenv('PUBLIC_KEY')
         self.__private_key = os.getenv('PRIVATE_KEY')
         self.__url_base = os.getenv('URL')
         self.ts = str(int(time.time()))
         self.limit = 100
-        self.charactertotal = 0
+        self.comicstotal = 0
         self.response_json = None
         self.offset = 0 
-        self.character_list = []
+        self.comics_list = []
 
     @property
     def hash(self):
@@ -30,21 +30,21 @@ class Characters:
         return hashlib.md5(hash_input.encode()).hexdigest()
     
     @property
-    def len_character_list(self):
-        return len(self.character_list)
+    def len_comics_list(self):
+        return len(self.comics_list)
        
     @property
     def default_url(self):
-        return f'{self.__url_base}/characters?ts={self.ts}&apikey={self.__public_key}&hash={self.hash}'
+        return f'{self.__url_base}/comics?limit=1&ts={self.ts}&apikey={self.__public_key}&hash={self.hash}'
     
     def get_all_api(self):
         response = requests.get(self.default_url)
         if response.status_code == 200:
             response_json = response.json()
-            self.charactertotal = int(response_json['data']['total'])
+            self.comicstotal = int(response_json['data']['total'])
             
             with concurrent.futures.ThreadPoolExecutor() as executor:
-                futures = [executor.submit(self.get_api, offset) for offset in range(0, self.charactertotal, self.limit)]
+                futures = [executor.submit(self.get_api, offset) for offset in range(0, self.comicstotal, self.limit)]
 
                 for future in concurrent.futures.as_completed(futures):
                     future.result()
@@ -54,7 +54,7 @@ class Characters:
             print("Error:", response.status_code)
 
     def get_api(self, offset):
-        url = f'{self.__url_base}/characters?limit={self.limit}&offset={offset}&ts={self.ts}&apikey={self.__public_key}&hash={self.hash}'
+        url = f'{self.__url_base}/comics?limit={self.limit}&offset={offset}&ts={self.ts}&apikey={self.__public_key}&hash={self.hash}'
         response = requests.get(url)
 
         if response.status_code == 200:
@@ -62,15 +62,18 @@ class Characters:
             print(f'offset:{offset}')
             for data in response_json['data']['results']:
                 item = {
-                    'id_character': data['id'],
-                    'name_character': data['name'],
-                    'description_character': data['description'],
-                    'image_character': data['thumbnail']['path'] + "." + data['thumbnail']['extension'],
-                    'first_hex_color_character': str(self.get_main_color(image_path = data['thumbnail']['path'] + "." + data['thumbnail']['extension'], extension = "." + data['thumbnail']['extension'])),
-                    'second_hex_color_character': str(self.get_main_color(image_path = data['thumbnail']['path'] + "." + data['thumbnail']['extension'], extension = "." + data['thumbnail']['extension'])),
+                    'id_comic': data['id'],
+                    'title_comic': data['title'],
+                    'description_comic': data['description'],
+                    'image_comic': data['thumbnail']['path'] + '.' + data['thumbnail']['extension'],
+                    'writers': [writer['name'] for writer in data['creators']['items'] if writer['role'] == 'writer'],
+                    'sold_count': data['prices'][0]['price'],
+                    'pageCount': data['pageCount'],
+                    'modified': data['modified'],
+                    'first_hex_color_comic': str(self.get_color(image_path = data['thumbnail']['path'] + "." + data['thumbnail']['extension'], extension = "." + data['thumbnail']['extension'])),
+                    'second_hex_color_comic': str(self.get_color(image_path = data['thumbnail']['path'] + "." + data['thumbnail']['extension'], extension = "." + data['thumbnail']['extension'])),
                     'events': [],
                     'stories': [],
-                    'comics': []
                 }
 
                 for event in data['events']['items']:
@@ -79,10 +82,7 @@ class Characters:
                 for story in data['stories']['items']:
                     item['stories'].append(story['name'])
 
-                for comic in data['comics']['items']:
-                    item['comics'].append(comic['name'])
-
-                self.character_list.append(item)
+                self.comics_list.append(item)
         else:
             print("Error:", response.status_code)
 
@@ -99,7 +99,7 @@ class Characters:
             img.close()
             os.remove(time_now)
             size = len(colors)
-            position = random.randrange(start=0, stop=size).as_integer_ratio()[0]
+            position = random.randrange(start=0,stop=size).as_integer_ratio()[0]
             color = colors[position]
             return '#{:02x}{:2x}{:02x}'.format(color[0], color[1], color[2])
         except Exception as e:
