@@ -30,7 +30,7 @@ In the `app` directory, you'll find a Python Flask app that serves as an interme
 
 - `app/src`: This directory holds the class files that structure the objects retrieved from the Marvel API.
 
-- `app/data`: Here, you'll find JSON and XSLM files containing the data of various objects retrieved from the Marvel API.
+- `app/data`: Here, you'll find JSON and XLSX files containing the data of various objects retrieved from the Marvel API.
 
 - `app/main.py`: This file serves as the entry point for the Flask app. Running this file initializes the solution and makes it accessible through defined routes.
 
@@ -95,7 +95,7 @@ No diretório `app`, você encontrará um aplicativo Python Flask que serve como
 
 - `app/src`: Este diretório contém os arquivos de classe que estruturam os objetos obtidos da API da Marvel.
 
-- `app/data`: Aqui, você encontrará arquivos JSON e XSLM contendo os dados de vários objetos obtidos da API da Marvel.
+- `app/data`: Aqui, você encontrará arquivos JSON e XLSX contendo os dados de vários objetos obtidos da API da Marvel.
 
 - `app/main.py`: Este arquivo serve como ponto de entrada para o aplicativo Flask. Ao executar este arquivo, a solução é inicializada e pode ser acessada por meio das rotas definidas.
 
