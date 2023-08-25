@@ -4,7 +4,7 @@ Welcome to the **Marvel API** repository! This repository contains a Power BI so
 
 ## Power BI Solution
 
-The root directory of this repository contains a Power BI solution that visualizes the data obtained from the Marvel Comics API. The Power BI solution is designed to give you insights into various aspects of the Marvel universe, leveraging the data pulled from the API.
+The root directory of this repository contains a Power BI solution that visualizes the data obtained from the Marvel Comics API. The Power BI solution is designed to give you insights into various aspects of the Marvel universe, utilizing the data pulled from the API. You can access the **dashboard** available [at this link](https://app.powerbi.com/groups/me/reports/b86a5265-c089-495c-b6af-12c00bed6464/ReportSection?experience=power-bi) (for corporate or student accounts) to visually explore the data.
 
 ## Python Flask App
 
@@ -69,7 +69,7 @@ Bem-vindo ao repositório **Marvel API**! Este repositório contém uma soluçã
 
 ## Solução Power BI
 
-O diretório raiz deste repositório contém uma solução em Power BI que visualiza os dados obtidos da API da Marvel Comics. A solução Power BI foi projetada para fornecer insights sobre diversos aspectos do universo Marvel, utilizando os dados obtidos da API.
+O diretório raiz deste repositório contém uma solução em Power BI que visualiza os dados obtidos da API da Marvel Comics. A solução Power BI foi projetada para fornecer insights sobre diversos aspectos do universo Marvel, utilizando os dados obtidos da API. Você pode acessar o **painel de controle** disponível [neste link](https://app.powerbi.com/groups/me/reports/b86a5265-c089-495c-b6af-12c00bed6464/ReportSection?experience=power-bi) (para contas corporativas ou de estudantes) para explorar visualmente os dados.
 
 ## Aplicativo Python Flask
 
