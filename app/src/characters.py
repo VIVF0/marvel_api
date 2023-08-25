@@ -6,8 +6,6 @@ from dotenv import load_dotenv
 import concurrent.futures
 from PIL import Image
 import urllib.request
-import os
-import time
 import random
 
 load_dotenv()
@@ -61,17 +59,21 @@ class Characters:
             response_json = response.json()
             print(f'offset:{offset}')
             for data in response_json['data']['results']:
+                image = data['thumbnail']['path'] if data['thumbnail'] is not None else None
+                extension = '.' + data['thumbnail']['extension'] if data['thumbnail'] is not None else None
+                image_extension = image + extension if data['thumbnail'] is not None else None
                 item = {
                     'id_character': data['id'],
                     'name_character': data['name'],
                     'description_character': data['description'],
-                    'image_character': data['thumbnail']['path'] + "." + data['thumbnail']['extension'],
-                    'first_hex_color_character': str(self.get_main_color(image_path = data['thumbnail']['path'] + "." + data['thumbnail']['extension'], extension = "." + data['thumbnail']['extension'])),
-                    'second_hex_color_character': str(self.get_main_color(image_path = data['thumbnail']['path'] + "." + data['thumbnail']['extension'], extension = "." + data['thumbnail']['extension'])),
+                    'image_character': image_extension,
                     'events': [],
                     'stories': [],
                     'comics': []
                 }
+                color1, color2 = self.get_color(image_path = image_extension, extension = extension)
+                item['first_hex_color_character'] = color1 
+                item['second_hex_color_character'] = color2                     
 
                 for event in data['events']['items']:
                     item['events'].append(event['name'])
@@ -88,10 +90,10 @@ class Characters:
 
     def get_color(self, image_path, extension):
         try:
-            if 'image_not_available' in image_path:
-                return None
+            if 'image_not_available' in image_path or image_path is None:
+                return '#000000', ' #ffffff'
             current_time = time.localtime()
-            random_numbers = ''.join(str(random.randint(0, 9)) for _ in range(5))
+            random_numbers = ''.join(str(random.randint(0, 9)) for _ in range(8))
             time_now = f'{current_time.tm_wday}{current_time.tm_mon}{current_time.tm_year}{current_time.tm_hour}{current_time.tm_min}{current_time.tm_sec}{random_numbers}{extension}'
             urllib.request.urlretrieve(image_path, time_now)
             img = Image.open(time_now)
@@ -99,9 +101,11 @@ class Characters:
             img.close()
             os.remove(time_now)
             size = len(colors)
-            position = random.randrange(start=0, stop=size).as_integer_ratio()[0]
-            color = colors[position]
-            return '#{:02x}{:2x}{:02x}'.format(color[0], color[1], color[2])
+            position1 = random.randrange(start=0, stop=size).as_integer_ratio()[0]
+            color1 = colors[position1]
+            position2 = random.randrange(start=0, stop=size).as_integer_ratio()[0]
+            color2 = colors[position2]
+            return '#{:02x}{:2x}{:02x}'.format(color1[0], color1[1], color1[2]), '#{:02x}{:2x}{:02x}'.format(color2[0], color2[1], color2[2])
         except Exception as e:
             print("Error processing image:", e)
-            return None
+            return '#000000', ' #ffffff'

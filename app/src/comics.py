@@ -5,8 +5,6 @@ import os
 import concurrent.futures
 from PIL import Image
 import urllib.request
-import os
-import time
 import random
 from dotenv import load_dotenv
 
@@ -19,7 +17,7 @@ class Comics:
         self.__url_base = os.getenv('URL')
         self.ts = str(int(time.time()))
         self.limit = 100
-        self.comicstotal = 0
+        self.comicstotal = 25000
         self.response_json = None
         self.offset = 0 
         self.comics_list = []
@@ -40,8 +38,8 @@ class Comics:
     def get_all_api(self):
         response = requests.get(self.default_url)
         if response.status_code == 200:
-            response_json = response.json()
-            self.comicstotal = int(response_json['data']['total'])
+            #response_json = response.json()
+            #self.comicstotal = int(response_json['data']['total'])
             
             with concurrent.futures.ThreadPoolExecutor() as executor:
                 futures = [executor.submit(self.get_api, offset) for offset in range(0, self.comicstotal, self.limit)]
@@ -56,26 +54,31 @@ class Comics:
     def get_api(self, offset):
         url = f'{self.__url_base}/comics?limit={self.limit}&offset={offset}&ts={self.ts}&apikey={self.__public_key}&hash={self.hash}'
         response = requests.get(url)
-
+        if response.status_code != 200:
+            print(response.status_code)
+            pass
         if response.status_code == 200:
             response_json = response.json()
             print(f'offset:{offset}')
             for data in response_json['data']['results']:
+                image = data['thumbnail']['path'] if data['thumbnail'] is not None else None
+                extension = '.' + data['thumbnail']['extension'] if data['thumbnail'] is not None else None
+                image_extension = image + extension if data['thumbnail'] is not None else None
                 item = {
                     'id_comic': data['id'],
                     'title_comic': data['title'],
                     'description_comic': data['description'],
-                    'image_comic': data['thumbnail']['path'] + '.' + data['thumbnail']['extension'],
+                    'image_comic': image_extension,
                     'writers': [writer['name'] for writer in data['creators']['items'] if writer['role'] == 'writer'],
                     'sold_count': data['prices'][0]['price'],
                     'pageCount': data['pageCount'],
                     'modified': data['modified'],
-                    'first_hex_color_comic': str(self.get_color(image_path = data['thumbnail']['path'] + "." + data['thumbnail']['extension'], extension = "." + data['thumbnail']['extension'])),
-                    'second_hex_color_comic': str(self.get_color(image_path = data['thumbnail']['path'] + "." + data['thumbnail']['extension'], extension = "." + data['thumbnail']['extension'])),
                     'events': [],
                     'stories': [],
                 }
-
+                color1, color2 = self.get_color(image_path = image_extension, extension = extension)
+                item['first_hex_color_character'] = color1 
+                item['second_hex_color_character'] = color2 
                 for event in data['events']['items']:
                     item['events'].append(event['name'])
 
@@ -88,10 +91,10 @@ class Comics:
 
     def get_color(self, image_path, extension):
         try:
-            if 'image_not_available' in image_path:
-                return None
+            if 'image_not_available' in image_path or image_path is None:
+                return '#000000', ' #ffffff'
             current_time = time.localtime()
-            random_numbers = ''.join(str(random.randint(0, 9)) for _ in range(5))
+            random_numbers = ''.join(str(random.randint(0, 9)) for _ in range(8))
             time_now = f'{current_time.tm_wday}{current_time.tm_mon}{current_time.tm_year}{current_time.tm_hour}{current_time.tm_min}{current_time.tm_sec}{random_numbers}{extension}'
             urllib.request.urlretrieve(image_path, time_now)
             img = Image.open(time_now)
@@ -99,9 +102,11 @@ class Comics:
             img.close()
             os.remove(time_now)
             size = len(colors)
-            position = random.randrange(start=0,stop=size).as_integer_ratio()[0]
-            color = colors[position]
-            return '#{:02x}{:2x}{:02x}'.format(color[0], color[1], color[2])
+            position1 = random.randrange(start=0, stop=size).as_integer_ratio()[0]
+            color1 = colors[position1]
+            position2 = random.randrange(start=0, stop=size).as_integer_ratio()[0]
+            color2 = colors[position2]
+            return '#{:02x}{:2x}{:02x}'.format(color1[0], color1[1], color1[2]), '#{:02x}{:2x}{:02x}'.format(color2[0], color2[1], color2[2])
         except Exception as e:
             print("Error processing image:", e)
-            return None
+            return '#000000', ' #ffffff'

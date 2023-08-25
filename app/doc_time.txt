@@ -1,0 +1,11 @@
+Runtime: 342.8752 seg - comics
+
+Runtime: 51.9081 seg - events - 73
+
+Runtime: 43.9864 seg - stories - 20000/50000
+
+Runtime: 13.5141 seg - creators - 5889
+
+Runtime: 91.3716 seg - series - 2900/15000
+
+Runtime: 79.7102 seg - characters - 1562

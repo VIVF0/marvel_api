@@ -1,1 +1,0 @@
-os 1562 objetos foram processados em 49seg com a utilização de multi-threads (nisso conta o processamento das imagens)
