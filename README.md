@@ -1,6 +1,8 @@
 # Marvel API Repository
 
-Welcome to the **Marvel API** repository! This repository contains a Power BI solution and a Python Flask app that interact with the Marvel Comics API (https://developer.marvel.com/docs) to provide comprehensive data about comics, characters, events, series, stories, and creators from the Marvel universe.
+Welcome to the **Marvel API** repository! This repository contains a Power BI solution and a Python Flask app that interact with the Marvel Comics API (https://developer.marvel.com/docs) to provide comprehensive data about comics, characters, events, series, stories, and creators from the Marvel universe.  
+
+[![Watch the video](https://miro.medium.com/v2/resize:fit:1358/0*qdHImq1G588SB9Ii.jpg)](https://youtu.be/Sw-Oe47Dxfw)
 
 ## Power BI Solution
 
